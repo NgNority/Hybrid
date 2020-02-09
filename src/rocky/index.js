@@ -69,13 +69,13 @@ function drawWeather(ctx, weather, w, d) {
   ctx.fillStyle = 'lightgray';
   ctx.textAlign = 'center';
 
-  if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) > 50) {
+  if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) >= 50) {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
       ctx.fillText(weatherString, w / 2, 115);
     } else {
       ctx.fillText(weatherString, w / 2, 100);
     }
-  } else if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) < 10) {
+  } else if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) <= 10) {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
       ctx.fillText(weatherString, w / 2, 115);
     } else {
