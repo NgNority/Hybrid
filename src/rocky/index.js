@@ -2,6 +2,8 @@ var rocky = require('rocky');
 
 var fonts = ['26px bold Leco-numbers-am-pm', '20px bold Leco-numbers'];
 
+var weather;
+
 function fractionToRadian(fraction) {
   return fraction * 2 * Math.PI;
 }
@@ -12,14 +14,14 @@ function drawTime(ctx, w, d) {
   ctx.font = fonts[0];
   ctx.textAlign = 'center';
 
-  if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) > 50) {
+  if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) >= 50) {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
       ctx.fillText(time, w / 2, 125, w);
     } else {
       ctx.fillText(time, w / 2, 110, w);
     }
   }
-  else if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) < 10) {
+  else if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) <= 10) {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
       ctx.fillText(time, w / 2, 125, w);
     } else {
@@ -58,6 +60,40 @@ function drawDate(ctx, w, h, d) {
 
 function adjustHeight(ctx, yCoordinate) {
   return yCoordinate * (ctx.canvas.unobstructedHeight / ctx.canvas.clientHeight);
+}
+
+function drawWeather(ctx, weather, w, d) {
+  // Create a string describing the weather
+  var weatherString = weather.celcius + '°C, ' + weather.desc;
+  //var weatherString = weather.fahrenheit + 'ºF, ' + weather.desc;
+  ctx.fillStyle = 'lightgray';
+  ctx.textAlign = 'center';
+
+  if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) > 50) {
+    if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
+      ctx.fillText(weatherString, w / 2, 115);
+    } else {
+      ctx.fillText(weatherString, w / 2, 100);
+    }
+  } else if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) < 10) {
+    if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
+      ctx.fillText(weatherString, w / 2, 115);
+    } else {
+      ctx.fillText(weatherString, w / 2, 100);
+    }
+  } else {
+    if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
+      ctx.fillText(weatherString, w / 2, 50);
+    } else {
+      ctx.fillText(weatherString, w / 2, 45);
+    }
+  }
+
+  // // Draw the text, top center
+  // ctx.fillStyle = 'lightgray';
+  // ctx.textAlign = 'center';
+  // ctx.font = '14px Gothic';
+  // ctx.fillText(weatherString, ctx.canvas.unobstructedWidth / 2, 2);
 }
 
 function drawMarkers(ctx) {
@@ -108,6 +144,10 @@ rocky.on('draw', function (event) {
   var cx = w / 2;
   var cy = h / 2;
 
+  if (weather) {
+    drawWeather(ctx, weather, w, d);
+  }
+
   var maxLength = (Math.min(w, h) - 20) / 2;
 
   var minuteFraction = (d.getMinutes()) / 60;
@@ -132,6 +172,24 @@ rocky.on('draw', function (event) {
 
 });
 
+rocky.on('message', function (event) {
+  // Receive a message from the mobile device (pkjs)
+  var message = event.data;
+
+  if (message.weather) {
+    // Save the weather data
+    weather = message.weather;
+
+    // Request a redraw so we see the information
+    rocky.requestDraw();
+  }
+});
+
 rocky.on('minutechange', function (event) {
   rocky.requestDraw();
+});
+
+rocky.on('hourchange', function (event) {
+  // Send a message to fetch the weather information (on startup and every hour)
+  rocky.postMessage({ 'fetch': true });
 });
