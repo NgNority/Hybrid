@@ -1,6 +1,6 @@
 var rocky = require('rocky');
 
-var fonts = ['24px Gothic', '18px Gothic'];
+var fonts = ['26px bold Leco-numbers-am-pm', '20px bold Leco-numbers'];
 
 function fractionToRadian(fraction) {
   return fraction * 2 * Math.PI;
@@ -12,29 +12,24 @@ function drawTime(ctx, w, d) {
   ctx.font = fonts[0];
   ctx.textAlign = 'center';
 
-  if(parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) > 55){
-    console.log("true");
-    console.log(parseInt(d.toLocaleTimeString(undefined, { hour: 'numeric' })));
+  if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) > 50) {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
       ctx.fillText(time, w / 2, 125, w);
-    } else{
+    } else {
       ctx.fillText(time, w / 2, 110, w);
     }
   }
-  else if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) < 5){
-    console.log("false");
-    console.log(parseInt(d.toLocaleTimeString(undefined, { hour: 'numeric' })));
-
+  else if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) < 10) {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
       ctx.fillText(time, w / 2, 125, w);
-    } else{
+    } else {
       ctx.fillText(time, w / 2, 110, w);
     }
 
-  }else {
+  } else {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
       ctx.fillText(time, w / 2, 25, w);
-    } else{
+    } else {
       ctx.fillText(time, w / 2, 20, w);
     }
   }
@@ -43,20 +38,19 @@ function drawTime(ctx, w, d) {
 
 function drawDate(ctx, w, h, d) {
   var date = d.toLocaleDateString(undefined, { day: '2-digit' });
+  // Add this to the front of date to show the mothth number (This has not been tested yet)
+  // d.toLocaleDateString(undefined, {month: '2-digit'})  + '.' +
 
   if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
     ctx.fillStyle = 'white';
     ctx.font = fonts[1];
     ctx.textAlign = 'center';
-    console.log("The watch is a chalk device");
     ctx.fillText(date, 120, 79, w);
   } else {
-    // Add this to the front of date to show the mothth number (This has not been tested yet)
-    // d.toLocaleDateString(undefined, {month: '2-digit'})  + '.' 
+
     ctx.fillStyle = 'white';
     ctx.font = fonts[1];
     ctx.textAlign = 'center';
-    console.log("The watch is not a chalk device");
     ctx.fillText(date, 95, 72, w);
   }
 
@@ -124,18 +118,20 @@ rocky.on('draw', function (event) {
   var hourFraction = (d.getHours() % 12 + minuteFraction) / 12;
   var hourAngle = fractionToRadian(hourFraction);
 
-  drawHand(ctx, cx, cy, hourAngle, maxLength * 0.6, "lightblue");
+  if (rocky.watchInfo.platform === 'diorite') {
+    drawHand(ctx, cx, cy, hourAngle, maxLength * 0.6, "white");
+  } else {
+    drawHand(ctx, cx, cy, hourAngle, maxLength * 0.6, "red");
+  }
+
   drawTime(ctx, w, d);
   drawDate(ctx, w, h, d);
 
   ctx.fillStyle = 'white';
   ctx.rockyFillRadial(cx, cy, 0, 4, 0, 2 * Math.PI);
 
-
-
 });
 
 rocky.on('minutechange', function (event) {
   rocky.requestDraw();
-
 });
