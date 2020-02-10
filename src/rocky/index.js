@@ -2,6 +2,8 @@ var rocky = require('rocky');
 
 var fonts = ['26px bold Leco-numbers-am-pm', '20px bold Leco-numbers'];
 
+var obstructed = false;
+
 var weather;
 
 function fractionToRadian(fraction) {
@@ -11,9 +13,18 @@ function fractionToRadian(fraction) {
 function drawTime(ctx, w, d) {
   var time = d.toLocaleTimeString(undefined, { hour: '2-digit' }) + ':' + d.toLocaleTimeString(undefined, { minute: '2-digit' });
   ctx.fillStyle = 'white';
-  ctx.font = fonts[0];
   ctx.textAlign = 'center';
-
+  
+  if(obstructed == true){
+    ctx.font = fonts[1];
+    if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
+      ctx.fillText(time, w / 2, 25, w);
+    } else {
+      ctx.fillText(time, w / 2, 20, w);
+    }
+  }else {
+  ctx.font = fonts[0];
+  
   if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) >= 50) {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
       ctx.fillText(time, w / 2, 125, w);
@@ -36,6 +47,7 @@ function drawTime(ctx, w, d) {
     }
   }
 }
+}
 
 
 function drawDate(ctx, w, h, d) {
@@ -47,13 +59,23 @@ function drawDate(ctx, w, h, d) {
     ctx.fillStyle = 'white';
     ctx.font = fonts[1];
     ctx.textAlign = 'center';
+    //ctx.fillText(date, 120, 79, w);
     ctx.fillText(date, 120, 79, w);
-  } else {
 
-    ctx.fillStyle = 'white';
-    ctx.font = fonts[1];
-    ctx.textAlign = 'center';
-    ctx.fillText(date, 95, 72, w);
+  } else {
+    if(obstructed == true){
+      ctx.fillStyle = 'white';
+      ctx.font = fonts[1];
+      ctx.textAlign = 'center';
+      //ctx.fillText(date, 95, 72, w);
+      ctx.fillText(date, 95, 45, w);
+    }else{
+      ctx.fillStyle = 'white';
+      ctx.font = fonts[1];
+      ctx.textAlign = 'center';
+      //ctx.fillText(date, 95, 72, w);
+      ctx.fillText(date, 95, 72, w);
+    }
   }
 
 }
@@ -139,33 +161,48 @@ rocky.on('draw', function (event) {
   var w = ctx.canvas.unobstructedWidth;
   var h = ctx.canvas.unobstructedHeight;
 
+  if(h < 168){
+    obstructed = true;
+  }else {
+    obstructed = false;
+  }
+
   drawMarkers(ctx);
 
   var cx = w / 2;
   var cy = h / 2;
+  if(obstructed == true){
 
+  }else{
   if (weather) {
     drawWeather(ctx, weather, w, d);
   }
+}
+  drawDate(ctx, w, h, d);
 
   var maxLength = (Math.min(w, h) - 20) / 2;
 
   var minuteFraction = (d.getMinutes()) / 60;
   var minuteAngle = fractionToRadian(minuteFraction);
 
-  drawHand(ctx, cx, cy, minuteAngle, maxLength, "white");
+  
+
 
   var hourFraction = (d.getHours() % 12 + minuteFraction) / 12;
   var hourAngle = fractionToRadian(hourFraction);
+  if(obstructed == true){
 
+  }else {
   if (rocky.watchInfo.platform === 'diorite') {
     drawHand(ctx, cx, cy, hourAngle, maxLength * 0.6, "white");
   } else {
     drawHand(ctx, cx, cy, hourAngle, maxLength * 0.6, "red");
   }
+}
 
+  drawHand(ctx, cx, cy, minuteAngle, maxLength, "white");
   drawTime(ctx, w, d);
-  drawDate(ctx, w, h, d);
+  
 
   ctx.fillStyle = 'white';
   ctx.rockyFillRadial(cx, cy, 0, 4, 0, 2 * Math.PI);
