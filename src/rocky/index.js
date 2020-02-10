@@ -12,7 +12,9 @@ function fractionToRadian(fraction) {
 
 function drawTime(ctx, w, d) {
   //d.toLocaleString(undefined, {hour12 : 'true'});
-  var time = d.toLocaleTimeString(undefined, { hour: '2-digit' }) + ':' + d.toLocaleTimeString(undefined, { minute: '2-digit' });
+  var rawTime = d.toLocaleTimeString(undefined, { hour: '2-digit' }) + ':' + d.toLocaleTimeString(undefined, { minute: '2-digit' });
+  var rawtime2 = rawTime.split('PM' || 'AM').join('').trim();
+  var time = rawtime2.split(' ').join('').trim();
   ctx.fillStyle = 'white';
   ctx.textAlign = 'center';
   
