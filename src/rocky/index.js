@@ -11,6 +11,7 @@ function fractionToRadian(fraction) {
 }
 
 function drawTime(ctx, w, d) {
+  //d.toLocaleString(undefined, {hour12 : 'true'});
   var time = d.toLocaleTimeString(undefined, { hour: '2-digit' }) + ':' + d.toLocaleTimeString(undefined, { minute: '2-digit' });
   ctx.fillStyle = 'white';
   ctx.textAlign = 'center';
@@ -190,15 +191,12 @@ rocky.on('draw', function (event) {
 
   var hourFraction = (d.getHours() % 12 + minuteFraction) / 12;
   var hourAngle = fractionToRadian(hourFraction);
-  if(obstructed == true){
-
-  }else {
+  
   if (rocky.watchInfo.platform === 'diorite') {
     drawHand(ctx, cx, cy, hourAngle, maxLength * 0.6, "white");
   } else {
     drawHand(ctx, cx, cy, hourAngle, maxLength * 0.6, "red");
   }
-}
 
   drawHand(ctx, cx, cy, minuteAngle, maxLength, "white");
   drawTime(ctx, w, d);
