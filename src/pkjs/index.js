@@ -11,6 +11,8 @@ Pebble.on('message', function(event) {
               '&lon=' + pos.coords.longitude +
               '&appid=' + myAPIKey;
 
+      //var url = 'http://api.openweathermap.org/data/2.5/weather?lat=37.2551&lon=-79.38544&appid=91d7723e6ad0f4c898b35f1e87cbad07';
+
       request(url, 'GET', function(respText) {
         var weatherData = JSON.parse(respText);
         Pebble.postMessage({
@@ -18,7 +20,8 @@ Pebble.on('message', function(event) {
             // Convert from Kelvin
             'celcius': Math.round(weatherData.main.temp - 273.15),
             'fahrenheit': Math.round((weatherData.main.temp - 273.15) * 9 / 5 + 32),
-            'desc': weatherData.weather[0].main
+            'desc': weatherData.weather[0].main,
+            'country' : weatherData.sys.country
           }
         });
       });

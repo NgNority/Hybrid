@@ -90,7 +90,12 @@ function adjustHeight(ctx, yCoordinate) {
 
 function drawWeather(ctx, weather, w, d) {
   // Create a string describing the weather
-  var weatherString = weather.celcius + '°C, ' + weather.desc;
+  if(weather.country == 'US'){
+    var weatherString = weather.fahrenheit + '°F, ' + weather.desc;
+    console.log("In the US: " + weather.country);
+  }else{
+    var weatherString = weather.celcius + '°C, ' + weather.desc;
+  }
   //var weatherString = weather.fahrenheit + 'ºF, ' + weather.desc;
   ctx.fillStyle = 'lightgray';
   ctx.textAlign = 'center';
