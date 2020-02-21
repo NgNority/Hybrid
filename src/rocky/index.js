@@ -6,48 +6,53 @@ var obstructed = false;
 
 var weather;
 
+var clockData = {
+  time: ''
+};
+
+
 function fractionToRadian(fraction) {
   return fraction * 2 * Math.PI;
 }
 
 function drawTime(ctx, w, d) {
   //d.toLocaleString(undefined, {hour12 : 'true'});
-  var rawTime = d.toLocaleTimeString(undefined, { hour: '2-digit' }) + ':' + d.toLocaleTimeString(undefined, { minute: '2-digit' });
-  var rawtime2 = rawTime.split('PM').join('').trim();
-  var rawtime3 = rawtime2.split('AM').join('').trim();
-  var time = rawtime3.split(' ').join('').trim();
+  // var rawTime = d.toLocaleTimeString(undefined, { hour: '2-digit' }) + ':' + d.toLocaleTimeString(undefined, { minute: '2-digit' });
+  // var rawtime2 = rawTime.split('PM').join('').trim();
+  // var rawtime3 = rawtime2.split('AM').join('').trim();
+  clockData.time = d.toLocaleTimeString().replace(/:\d+($| )/, '$1');
   ctx.fillStyle = 'white';
   ctx.textAlign = 'center';
   
   if(obstructed == true){
     ctx.font = fonts[1];
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
-      ctx.fillText(time, w / 2, 25, w);
+      ctx.fillText(clockData.time, w / 2, 25, w);
     } else {
-      ctx.fillText(time, w / 2, 20, w);
+      ctx.fillText(clockData.time, w / 2, 20, w);
     }
   }else {
   ctx.font = fonts[0];
   
   if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) >= 50) {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
-      ctx.fillText(time, w / 2, 125, w);
+      ctx.fillText(clockData.time, w / 2, 125, w);
     } else {
       ctx.fillText(time, w / 2, 110, w);
     }
   }
   else if (parseInt(d.toLocaleTimeString(undefined, { minute: 'numeric' })) <= 10) {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
-      ctx.fillText(time, w / 2, 125, w);
+      ctx.fillText(clockData.time, w / 2, 125, w);
     } else {
-      ctx.fillText(time, w / 2, 110, w);
+      ctx.fillText(clockData.time, w / 2, 110, w);
     }
 
   } else {
     if (ctx.canvas.clientWidth == ctx.canvas.clientHeight) {
-      ctx.fillText(time, w / 2, 25, w);
+      ctx.fillText(clockData.time, w / 2, 25, w);
     } else {
-      ctx.fillText(time, w / 2, 20, w);
+      ctx.fillText(clockData.time, w / 2, 20, w);
     }
   }
 }
